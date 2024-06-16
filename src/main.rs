@@ -1,5 +1,6 @@
 extern crate rustyline;
 
+use ore::repl::rep;
 use rustyline::{ DefaultEditor, Result };
 use rustyline::error::ReadlineError;
 
@@ -17,7 +18,7 @@ fn main() -> Result<()> {
         let _ = rl.add_history_entry(&line);
         rl.save_history("history.txt").unwrap();
         if line.len() > 0 {
-          println!("ore< {}", line);
+          rep(line);
         }
       },
       Err(ReadlineError::Interrupted) => {
