@@ -1,16 +1,19 @@
 extern crate rustyline;
 
 use ore::repl::rep;
-use rustyline::{ DefaultEditor, Result };
+use rustyline::{DefaultEditor, Result};
 use rustyline::error::ReadlineError;
 
 fn main() -> Result<()> {
+  // Create editor
   let mut rl = DefaultEditor::new()?;
 
+  // Check history
   if rl.load_history("history.txt").is_err() {
     eprintln!("ore< history not found");
   }
 
+  // Prompt and process the readline
   loop {
     let readline = rl.readline("ore> ");
     match readline {
@@ -36,5 +39,6 @@ fn main() -> Result<()> {
     }
   }
 
+  // Return
   Ok(())
 }
