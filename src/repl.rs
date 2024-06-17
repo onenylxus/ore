@@ -1,3 +1,4 @@
+use crate::printer::pr_str;
 use crate::reader::read_str;
 use crate::types::{OreResult, OreType};
 
@@ -7,19 +8,21 @@ fn read(string: &String) -> OreResult {
 }
 
 // Evaluate function
-fn eval(_tokens: OreType) {}
+fn eval(tokens: OreType) -> OreType {
+  tokens
+}
 
 // Print function
-fn print(string: &String) {
-  println!("ore< {}", String::from(string));
+fn print(tokens: &OreType) {
+  println!("ore< {}", pr_str(tokens));
 }
 
 // Read-eval-print function
 pub fn rep(string: String) {
   match read(&string) {
     Ok(t) => {
-      eval(t);
-      print(&string);
+      let result = eval(t);
+      print(&result);
     },
     Err(e) => println!("ore< Error: {}", e),
   }
