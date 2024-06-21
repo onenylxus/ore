@@ -13,7 +13,7 @@ fn eval(tokens: OreType) -> OreType {
 }
 
 // Print function
-fn print(tokens: &OreType) {
+fn print(tokens: &Vec<OreType>) {
   println!("ore< {}", pr_str(tokens, true));
 }
 
@@ -22,7 +22,7 @@ pub fn rep(string: String) {
   match read(&string) {
     Ok(t) => {
       let result = eval(t);
-      print(&result);
+      print(&vec!(result));
     },
     Err(e) => println!("ore< Error: {}", e),
   }

@@ -1,6 +1,9 @@
-use crate::types::{OreError, OreResult};
-use crate::types::OreType::{Bool, Float, Int, List, Nil, Str, Sym};
+use crate::types::{OreError, OreResult, OreType};
+use crate::types::OreType::{Bool, Float, Hash, Int, List, Nil, Str, Sym, Vect};
+use itertools::Itertools;
 use regex::Regex;
+use std::collections::HashMap;
+use std::rc::Rc;
 
 // Reader stores tokens and a position
 struct Reader {
@@ -52,6 +55,10 @@ fn read_form(reader: &mut Reader) -> OreResult {
   match &token[..] {
     "(" => read_list(reader, ")"),
     ")" => Err("unexpected symbol ')'".to_string()),
+    "[" => read_list(reader, "]"),
+    "]" => Err("unexpected symbol ']'".to_string()),
+    "{" => read_list(reader, "}"),
+    "}" => Err("unexpected symbol '}'".to_string()),
     _ => read_atom(reader),
   }
 }
@@ -82,7 +89,20 @@ fn read_list(reader: &mut Reader, end: &str) -> OreResult {
 
   // Return the results into a List type
   match end {
-    ")" => Ok(List(tokens.into())),
+    ")" => Ok(List(Rc::new(tokens.into()))),
+    "]" => Ok(Vect(Rc::new(tokens.into()))),
+    "}" => {
+      let mut hm: HashMap<String, OreType> = HashMap::default();
+      for (k, v) in tokens.iter().tuples() {
+        match k {
+          Str(s) => {
+            hm.insert(s.to_string(), v.clone());
+          },
+          _ => return Err("hash key is not string".to_string()),
+        }
+      }
+      Ok(Hash(Rc::new(hm)))
+    }
     _ => Err(format!("unknown end '{}'", end)),
   }
 }
@@ -105,6 +125,8 @@ fn read_atom(reader: &mut Reader) -> OreResult {
         Ok(Int(token.parse().unwrap()))
       } else if s_re.is_match(&token) {
         Ok(Str(token[1..token.len() - 1].to_string()))
+      } else if token.starts_with(':') {
+        Ok(Str(format!("\u{29e}{}", &token[1..])))
       } else {
         Ok(Sym(token.to_string()))
       }
