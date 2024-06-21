@@ -14,7 +14,7 @@ fn eval(tokens: OreType) -> OreType {
 
 // Print function
 fn print(tokens: &OreType) {
-  println!("ore< {}", pr_str(tokens));
+  println!("ore< {}", pr_str(tokens, true));
 }
 
 // Read-eval-print function
